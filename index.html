@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Holi + Mouse Trail</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(45deg, #ffffff, #ffe5e5, #ffffe5, #e5ffe5, #e5ffff, #e5e5ff);
+      background-size: 600% 600%;
+      animation: shift 15s ease infinite;
+      font-family: sans-serif;
+    }
+    @keyframes shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #tsparticles {
+      position: fixed; 
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #myCanvas {
+      position: absolute;
+      top: 0; 
+      left: 0;
+      z-index: 1;
+    }
+    #msg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      color: #FF00FF;
+      text-shadow: 2px 2px #00FFFF;
+      background: rgba(255,255,255,0.7);
+      padding: 20px;
+      border: 2px solid #000;
+      border-radius: 10px;
+      display: none;
+      z-index: 2;
+    }
+  </style>
+  <!-- tsParticles library -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
+</head>
+<body>
+  <h1>Keep Sprading Colours for Surprise</h1>
+  <!-- tsParticles container -->
+  <div id="tsparticles"></div>
+  <!-- Canvas for Holi splats -->
+  <canvas id="myCanvas"></canvas>
+  <!-- Big, colorful Holi message -->
+  <div id="msg">Happy Holi!</div>
+
+  <script>
+    // This code below is from the tsParticles library website for the mouse cursor effect
+    tsParticles.load("tsparticles", {
+      particles: {
+        number: { value: 0 },
+        life: {
+          duration: { value: 0.5 }, 
+          count: 1
+        },
+        size: {
+          value: { min: 2, max: 5 }
+        },
+        move: {
+          enable: true,
+          speed: 10,
+          outModes: "destroy"
+        },
+        color: {
+          value: ["#ff0000", "#ffa500", "#ffff00", "#008000", "#0000ff", "#800080"]
+        },
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: true, mode: "trail" }
+        },
+        modes: {
+          trail: {
+            delay: 0.02,
+            quantity: 3
+          }
+        }
+      },
+      background: { color: "transparent" }
+    });
+
+    let c = document.getElementById("myCanvas");
+    let ctx = c.getContext("2d");
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    c.width = w;
+    c.height = h;
+
+    let splatArea = 0;
+    let threshold = 0.2; 
+    let msg = document.getElementById("msg");
+
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      c.width = w;
+      c.height = h;
+    }
+
+    function randColor() {
+      let arr = ["red", "blue", "green", "orange", "purple", "yellow"];
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function splat(x, y) {
+      let size = Math.random() * 50 + 10;
+      ctx.fillStyle = randColor();
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+      splatArea += Math.PI * size * size;
+      if (splatArea > threshold * w * h) {
+        msg.style.display = "block";
+      }
+    }
+
+    c.addEventListener("click", (e) => {
+      splat(e.clientX, e.clientY);
+    });
+
+    window.addEventListener("resize", resize);
+  </script>
+</body>
+</html>
